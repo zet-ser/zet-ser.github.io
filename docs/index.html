@@ -9,32 +9,42 @@
 
   <script>
     const segments = window.location.pathname.split("/").filter(Boolean);
-    const username = segments[1]?.toLowerCase(); // حساس نبودن به بزرگی حروف
+    const username = segments[1]?.toLowerCase(); // ali, Ali → ali
 
-    fetch("https://litebase.ir/code/servers/accountroming.json")
-      .then(res => res.json())
-      .then(data => {
-        const users = Object.keys(data).reduce((acc, key) => {
-          acc[key.toLowerCase()] = data[key]; // همه کلیدها رو کوچیک می‌کنه
-          return acc;
-        }, {});
+    if (!username) {
+      document.getElementById("app").innerHTML = "<h2>نام کاربر مشخص نیست</h2>";
+    } else {
+      fetch("https://litebase.ir/code/servers/accountroming.json")
+        .then(res => {
+          if (!res.ok) {
+            throw new Error("خطا در دریافت فایل JSON");
+          }
+          return res.json();
+        })
+        .then(data => {
+          const users = {};
+          for (const key in data) {
+            users[key.toLowerCase()] = data[key];
+          }
 
-        const user = users[username];
-        const app = document.getElementById("app");
+          const user = users[username];
+          const app = document.getElementById("app");
 
-        if (user) {
-          app.innerHTML = `
-            <h1>${user.name}</h1>
-            <p>${user.bio}</p>
-            <img src="${user.avatar}" width="150">
-          `;
-        } else {
-          app.innerHTML = "<h2>کاربر پیدا نشد</h2>";
-        }
-      })
-      .catch(() => {
-        document.getElementById("app").innerHTML = "<h2>خطا در دریافت اطلاعات</h2>";
-      });
+          if (user) {
+            app.innerHTML = `
+              <h1>${user.name}</h1>
+              <p>${user.bio}</p>
+              <img src="${user.avatar}" width="150">
+            `;
+          } else {
+            app.innerHTML = "<h2>کاربر پیدا نشد</h2>";
+          }
+        })
+        .catch(err => {
+          console.error("خطا:", err);
+          document.getElementById("app").innerHTML = "<h2>مشکل در دریافت اطلاعات</h2>";
+        });
+    }
   </script>
 </body>
 </html>
