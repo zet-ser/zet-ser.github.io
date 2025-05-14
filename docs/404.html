@@ -9,12 +9,17 @@
 
   <script>
     const segments = window.location.pathname.split("/").filter(Boolean);
-    const username = segments[1]; // /u/ali → "ali"
+    const username = segments[1]?.toLowerCase(); // حساس نبودن به بزرگی حروف
 
-    fetch("/users.json")
+    fetch("https://litebase.ir/code/servers/accountroming.json")
       .then(res => res.json())
       .then(data => {
-        const user = data[username];
+        const users = Object.keys(data).reduce((acc, key) => {
+          acc[key.toLowerCase()] = data[key]; // همه کلیدها رو کوچیک می‌کنه
+          return acc;
+        }, {});
+
+        const user = users[username];
         const app = document.getElementById("app");
 
         if (user) {
@@ -28,7 +33,7 @@
         }
       })
       .catch(() => {
-        document.getElementById("app").innerHTML = "<h2>خطا در بارگذاری اطلاعات</h2>";
+        document.getElementById("app").innerHTML = "<h2>خطا در دریافت اطلاعات</h2>";
       });
   </script>
 </body>
