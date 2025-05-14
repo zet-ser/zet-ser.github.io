@@ -1,185 +1,29 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>پروفایل کاربر</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary-color: #007bff; /* یک رنگ اصلی برای تم */
-      --card-bg: #ffffff;
-      --text-color: #333;
-      --text-muted: #6c757d;
-      --font-family-sans-serif: 'Vazirmatn', sans-serif;
-      --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      --border-radius: 15px;
-    }
-
-    body {
-      font-family: var(--font-family-sans-serif);
-      text-align: center;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      box-sizing: border-box;
-      color: var(--text-color);
-    }
-
-    #app {
-      width: 100%;
-      max-width: 400px; /* حداکثر عرض برای خوانایی بهتر در دسکتاپ */
-    }
-
-    .loading-message, .error-message, .info-message {
-      background-color: var(--card-bg);
-      padding: 20px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      font-size: 1.1em;
-      color: var(--text-muted);
-    }
-    .error-message {
-        color: #dc3545;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      padding: 30px 25px;
-      box-shadow: var(--box-shadow);
-      opacity: 0;
-      transform: translateY(30px);
-      animation: fadeInCard 0.6s ease-out forwards;
-      overflow: hidden; /* برای جلوگیری از بیرون زدن سایه عکس */
-    }
-
-    @keyframes fadeInCard {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .card img.avatar {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%; /* دایره‌ای کردن عکس */
-      object-fit: cover; /* برای جلوگیری از کشیدگی عکس */
-      margin-bottom: 20px;
-      border: 5px solid #fff; /* حاشیه سفید زیبا دور عکس */
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    }
-
-    .card h1.user-name {
-      font-size: 1.8em;
-      font-weight: 700;
-      color: var(--text-color);
-      margin-top: 0;
-      margin-bottom: 10px;
-    }
-
-    .card p.user-bio {
-      font-size: 1em;
-      color: var(--text-muted);
-      line-height: 1.7;
-      margin-bottom: 0;
-    }
-
-    /* برای نمایش بهتر در دستگاه‌های خیلی کوچک */
-    @media (max-width: 400px) {
-      body {
-        padding: 15px;
-      }
-      .card {
-        padding: 25px 20px;
-      }
-      .card img.avatar {
-        width: 100px;
-        height: 100px;
-      }
-      .card h1.user-name {
-        font-size: 1.6em;
-      }
-      .card p.user-bio {
-        font-size: 0.95em;
-      }
-    }
-  </style>
-</head>
+<html>
+<head><meta charset="UTF-8"><title>پروفایل کاربر</title></head>
 <body>
-  <div id="app">
-    <div class="loading-message">در حال بارگذاری اطلاعات...</div>
-  </div>
+  <div id="profile">در حال بارگذاری...</div>
 
   <script>
-    const appElement = document.getElementById("app");
+    const path = window.location.pathname;
+    const username = path.split("/").pop().toLowerCase(); // مثل /u/Ali
 
-    // تابع برای نمایش پیام‌های مختلف
-    function showMessage(message, type = "info") {
-        let className = "info-message";
-        if (type === "error") className = "error-message";
-        else if (type === "loading") className = "loading-message";
-        
-        appElement.innerHTML = `<div class="${className}">${message}</div>`;
-    }
-
-    // استخراج نام کاربری از URL
-    // مثال URL: yourdomain.com/profile/ali یا yourdomain.com/ali
-    // با توجه به کد شما، فرض میکنیم نام کاربری دومین بخش مسیر است
-    const pathSegments = window.location.pathname.split("/").filter(Boolean);
-    // اگر فایل HTML در روت باشد و آدرس مثلا /ali باشد، pathSegments[0] نام کاربری است
-    // اگر فایل در /profile/index.html باشد و آدرس /profile/ali باشد، pathSegments[1] نام کاربری است.
-    // اینجا فرض می کنیم path مانند /profile/username یا /username است.
-    // اگر فایل HTML در روت است و URL به صورت /username است:
-    // const username = pathSegments[0]?.toLowerCase();
-    // اگر فایل HTML در یک پوشه مثل /profile/ است و URL به صورت /profile/username است:
-    const username = pathSegments.length > 1 ? pathSegments[1]?.toLowerCase() : pathSegments[0]?.toLowerCase();
-
-
-    if (!username) {
-      showMessage("نام کاربر در آدرس URL مشخص نشده است.", "error");
-    } else {
-      fetch("https://litebase.ir/code/servers/accountroming.json")
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`خطای شبکه: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          // دیتا در API جدید یک آبجکت است که کلیدهایش نام‌های کاربری هستند
-          // نیازی به تبدیل خاصی نیست، فقط کیس نام کاربری را یکسان میکنیم
-          const users = {};
-          for (const key in data) {
-            users[key.toLowerCase()] = data[key];
-          }
-
-          const user = users[username];
-
-          if (user) {
-            appElement.innerHTML = `
-              <div class="card">
-                <img src="${user.avatar}" class="avatar" alt="تصویر پروفایل ${user.name}">
-                <h1 class="user-name">${user.name}</h1>
-                <p class="user-bio">${user.bio}</p>
-              </div>
-            `;
-          } else {
-            showMessage(`کاربری با نام کاربری "${username}" پیدا نشد.`, "info");
-          }
-        })
-        .catch(error => {
-          console.error("خطا در دریافت یا پردازش اطلاعات:", error);
-          showMessage("متاسفانه مشکلی در دریافت اطلاعات رخ داد. لطفا بعدا تلاش کنید.", "error");
-        });
-    }
+    fetch(`https://xetro.ir/get-user.php?username=${username}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          document.getElementById("profile").innerText = data.error;
+        } else {
+          document.getElementById("profile").innerHTML = `
+            <h1>${data.name}</h1>
+            <p>${data.bio}</p>
+            <img src="https://xetro.ir/images/${data.avatar}" width="150">
+          `;
+        }
+      })
+      .catch(() => {
+        document.getElementById("profile").innerText = "خطا در دریافت اطلاعات";
+      });
   </script>
 </body>
 </html>
