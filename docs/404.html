@@ -34,7 +34,7 @@
     if (!username) {
       document.getElementById("app").innerHTML = "<h2>نام کاربر مشخص نیست</h2>";
     } else {
-      fetch("/users.json")
+      fetch("/https://zedline.ir/api/zet/")
         .then(res => res.json())
         .then(data => {
           const users = {};
