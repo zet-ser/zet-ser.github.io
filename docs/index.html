@@ -1,26 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>پروفایل کاربر</title>
+  <title>نمایش پروفایل کاربر</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background-color: #f5f5f5;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    img {
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">در حال بارگذاری...</div>
+  <div id="app">در حال بارگذاری اطلاعات...</div>
 
   <script>
     const segments = window.location.pathname.split("/").filter(Boolean);
-    const username = segments[1]?.toLowerCase(); // ali, Ali → ali
+    const username = segments[1]?.toLowerCase();
 
     if (!username) {
       document.getElementById("app").innerHTML = "<h2>نام کاربر مشخص نیست</h2>";
     } else {
-      fetch("https://zedline.ir/api/zet/")
-        .then(res => {
-          if (!res.ok) {
-            throw new Error("خطا در دریافت فایل JSON");
-          }
-          return res.json();
-        })
+      fetch("users.json")
+        .then(res => res.json())
         .then(data => {
           const users = {};
           for (const key in data) {
@@ -32,17 +47,18 @@
 
           if (user) {
             app.innerHTML = `
-              <h1>${user.name}</h1>
-              <p>${user.bio}</p>
-              <img src="${user.avatar}" width="150">
+              <div class="card">
+                <h1>${user.name}</h1>
+                <p>${user.bio}</p>
+                <img src="${user.avatar}" width="200" alt="${user.name}">
+              </div>
             `;
           } else {
-            app.innerHTML = "<h2>کاربر پیدا نشد</h2>";
+            app.innerHTML = "<h2>کاربری با این آیدی پیدا نشد</h2>";
           }
         })
-        .catch(err => {
-          console.error("خطا:", err);
-          document.getElementById("app").innerHTML = "<h2>مشکل در دریافت اطلاعات</h2>";
+        .catch(() => {
+          document.getElementById("app").innerHTML = "<h2>خطا در دریافت اطلاعات</h2>";
         });
     }
   </script>
