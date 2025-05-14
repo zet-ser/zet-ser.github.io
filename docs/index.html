@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>پروفایل کاربر</title>
+</head>
+<body>
+  <div id="app">در حال بارگذاری...</div>
+
+  <script>
+    const segments = window.location.pathname.split("/").filter(Boolean);
+    const username = segments[1]; // /u/ali → "ali"
+
+    fetch("/users.json")
+      .then(res => res.json())
+      .then(data => {
+        const user = data[username];
+        const app = document.getElementById("app");
+
+        if (user) {
+          app.innerHTML = `
+            <h1>${user.name}</h1>
+            <p>${user.bio}</p>
+            <img src="${user.avatar}" width="150">
+          `;
+        } else {
+          app.innerHTML = "<h2>کاربر پیدا نشد</h2>";
+        }
+      })
+      .catch(() => {
+        document.getElementById("app").innerHTML = "<h2>خطا در بارگذاری اطلاعات</h2>";
+      });
+  </script>
+</body>
+</html>
