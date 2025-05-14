@@ -9,17 +9,15 @@
 
   <script>
     const segments = window.location.pathname.split("/").filter(Boolean);
-    const username = segments[1]?.toLowerCase();
+    const username = segments[1]?.toLowerCase(); // ali, Ali → ali
 
     if (!username) {
       document.getElementById("app").innerHTML = "<h2>نام کاربر مشخص نیست</h2>";
     } else {
-      const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://litebase.ir/code/servers/accountroming.json");
-
-      fetch(proxyUrl)
+      fetch("https://zedline.ir/api/zet/")
         .then(res => {
           if (!res.ok) {
-            throw new Error("خطا در دریافت فایل JSON از پراکسی");
+            throw new Error("خطا در دریافت فایل JSON");
           }
           return res.json();
         })
